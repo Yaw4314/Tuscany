@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tuscany Courtyard — Authentic is Everything</title>
+<meta name="description" content="Authentic Italian fine dining in the heart of Islamabad. Stone-oven pizza, handcrafted pasta, grilled steaks. Kohsar Market, F-6.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --cream:#f7f3ed;
+  --linen:#ede8e0;
+  --espresso:#1a0f0a;
+  --terracotta:#8b3a1e;
+  --amber:#c4873b;
+  --white:#ffffff;
+  --black:#0d0d0d;
+  --muted:rgba(26,15,10,.45);
+  --ease:cubic-bezier(0.16,1,0.3,1);
+}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{font-family:'Lato',sans-serif;font-weight:300;background:var(--cream);color:var(--espresso);overflow-x:hidden;cursor:none}
+
+/* CUSTOM CURSOR */
+.cursor{position:fixed;width:10px;height:10px;background:var(--terracotta);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:transform .15s var(--ease),width .3s var(--ease),height .3s var(--ease),background .3s ease}
+.cursor-ring{position:fixed;width:36px;height:36px;border:1px solid var(--terracotta);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:transform .08s linear,width .3s var(--ease),height .3s var(--ease),opacity .3s ease;opacity:.5}
+body:has(a:hover) .cursor,body:has(button:hover) .cursor{width:6px;height:6px;background:var(--amber)}
+body:has(a:hover) .cursor-ring,body:has(button:hover) .cursor-ring{width:56px;height:56px;opacity:.25}
+
+/* SCROLL PROGRESS */
+.scroll-progress{position:fixed;top:0;left:0;width:0;height:2px;background:var(--terracotta);z-index:10001;will-change:width;transition:width .1s linear}
+
+/* ===== STICKY NAV ===== */
+.sticky-nav{position:fixed;top:0;left:0;width:100%;height:64px;background:rgba(247,243,237,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:.5px solid rgba(26,15,10,.1);z-index:10000;display:flex;align-items:center;justify-content:space-between;padding:0 40px;transform:translateY(-100%);will-change:transform;transition:transform 700ms var(--ease)}
+.sticky-nav.visible{transform:translateY(0)}
+.nav-wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:var(--espresso)}
+.nav-links{display:flex;align-items:center;gap:36px;list-style:none}
+.nav-links a{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--espresso);text-decoration:none;position:relative;padding-bottom:3px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--terracotta);transition:width 350ms var(--ease)}
+.nav-links a:hover::after{width:100%}
+.nav-reserve{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);background:var(--terracotta);border:none;padding:10px 22px;cursor:pointer;text-decoration:none;transition:background 300ms ease,transform 300ms ease;border-radius:0}
+.nav-reserve:hover{background:var(--espresso);transform:translateY(-1px)}
+
+/* ===== HERO ===== */
+.hero{position:relative;width:100%;height:100vh;min-height:620px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.hero-bg{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=90&auto=format&fit=crop');background-size:cover;background-position:center 30%;will-change:transform}
+.hero-overlay{position:absolute;inset:0;background:rgba(26,15,10,.52)}
+.hero-grain{position:absolute;inset:0;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none}
+.hero-wordmark{position:absolute;top:28px;left:36px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(247,243,237,.7);z-index:10;opacity:0;transform:translateY(12px);transition:opacity 700ms var(--ease) 1.4s,transform 700ms var(--ease) 1.4s}
+.hero.loaded .hero-wordmark{opacity:1;transform:translateY(0)}
+.hero-est{position:absolute;top:28px;right:36px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:rgba(247,243,237,.45);z-index:10;opacity:0;transition:opacity 700ms var(--ease) 1.6s}
+.hero.loaded .hero-est{opacity:1}
+.hero-content{position:relative;z-index:10;text-align:center;display:flex;flex-direction:column;align-items:center;gap:24px}
+.hero-line-1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(64px,13vw,148px);text-transform:uppercase;color:var(--white);letter-spacing:-.02em;line-height:.9;overflow:hidden;display:flex;justify-content:center}
+.hero-line-2{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(40px,8vw,96px);color:var(--amber);letter-spacing:-.01em;line-height:.95;overflow:hidden;display:flex;justify-content:center}
+.char{display:inline-block;opacity:0;transform:translateY(100%);will-change:transform,opacity}
+.char.space{width:.28em;opacity:1;transform:none}
+.hero.loaded .char{opacity:1;transform:translateY(0);transition:opacity 800ms var(--ease),transform 800ms var(--ease)}
+.hero-sub{font-family:'Lato',sans-serif;font-weight:300;font-size:15px;color:rgba(247,243,237,.55);letter-spacing:.12em;opacity:0;transition:opacity 700ms var(--ease) 2s}
+.hero.loaded .hero-sub{opacity:1}
+.hero-ctas{display:flex;gap:16px;opacity:0;transition:opacity 700ms var(--ease) 2.2s}
+.hero.loaded .hero-ctas{opacity:1}
+.btn-primary{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);background:var(--terracotta);border:none;padding:14px 32px;cursor:pointer;text-decoration:none;transition:background 300ms ease,transform 300ms ease;display:inline-block}
+.btn-primary:hover{background:var(--espresso);transform:translateY(-2px)}
+.btn-ghost{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(247,243,237,.8);background:transparent;border:1px solid rgba(247,243,237,.35);padding:14px 32px;cursor:pointer;text-decoration:none;transition:border-color 300ms ease,color 300ms ease,transform 300ms ease;display:inline-block}
+.btn-ghost:hover{border-color:rgba(247,243,237,.8);color:var(--white);transform:translateY(-2px)}
+.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0;transition:opacity 700ms var(--ease) 2.5s}
+.hero.loaded .hero-scroll{opacity:.5}
+.hero-scroll span{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--cream)}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--amber),transparent);animation:scrollLine 2.2s ease-in-out infinite}
+@keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ===== SCROLL REVEAL ===== */
+.sr{opacity:0;transform:translateY(48px);transition:opacity 800ms var(--ease),transform 800ms var(--ease)}
+.sr.in-view{opacity:1;transform:translateY(0)}
+.sr-left{opacity:0;transform:translateX(-48px);transition:opacity 800ms var(--ease),transform 800ms var(--ease)}
+.sr-left.in-view{opacity:1;transform:translateX(0)}
+.sr-right{opacity:0;transform:translateX(48px);transition:opacity 800ms var(--ease),transform 800ms var(--ease)}
+.sr-right.in-view{opacity:1;transform:translateX(0)}
+.sr-scale{opacity:0;transform:scale(.97);transition:opacity 900ms var(--ease),transform 900ms var(--ease)}
+.sr-scale.in-view{opacity:1;transform:scale(1)}
+
+/* ===== PRODUCT REVEALS ===== */
+.reveal-section{display:grid;grid-template-columns:60fr 40fr;min-height:100vh;overflow:hidden}
+.reveal-section.flipped{grid-template-columns:40fr 60fr}
+.reveal-img{position:relative;overflow:hidden}
+.reveal-img img{width:100%;height:100%;object-fit:cover;transition:transform 1400ms ease-out}
+.reveal-img:hover img{transform:scale(1.04)}
+.reveal-img-overlay{position:absolute;inset:0;background:rgba(26,15,10,.08)}
+.reveal-text{background:var(--cream);display:flex;flex-direction:column;justify-content:center;padding:80px 64px;position:relative}
+.reveal-section.flipped .reveal-text{order:-1}
+.reveal-kicker{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:rgba(26,15,10,.3);margin-bottom:20px}
+.reveal-name{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(40px,5.5vw,76px);color:var(--espresso);line-height:1.05;margin-bottom:20px}
+.reveal-desc{font-size:17px;line-height:1.8;color:var(--espresso);opacity:.5;max-width:400px;margin-bottom:36px}
+.reveal-specs{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:40px;border-top:.5px solid rgba(26,15,10,.1)}
+.reveal-spec{padding:14px 0;border-bottom:.5px solid rgba(26,15,10,.08)}
+.reveal-spec-label{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--terracotta);margin-bottom:4px}
+.reveal-spec-val{font-size:14px;color:var(--espresso);opacity:.55}
+.reveal-price{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;letter-spacing:.05em;color:var(--terracotta);margin-bottom:8px}
+.reveal-price-label{font-size:12px;color:var(--espresso);opacity:.35;margin-bottom:28px}
+.reveal-num{position:absolute;bottom:40px;right:40px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:120px;line-height:1;color:rgba(26,15,10,.04);letter-spacing:-.04em;pointer-events:none;user-select:none}
+
+/* ===== KINETIC WORD SECTION ===== */
+.kinetic-section{background:var(--black);height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.kinetic-word{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(80px,18vw,220px);text-transform:uppercase;color:var(--white);letter-spacing:-.04em;text-align:center;position:absolute;opacity:0;transform:translateY(80px);transition:opacity .6s var(--ease),transform .6s var(--ease);pointer-events:none;line-height:1}
+.kinetic-word.active{opacity:1;transform:translateY(0)}
+.kinetic-word.exit{opacity:0;transform:translateY(-80px)}
+.kinetic-word span{color:var(--terracotta)}
+.kinetic-since{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(24px,4vw,52px);color:rgba(247,243,237,.35);position:absolute;bottom:60px;left:50%;transform:translateX(-50%);white-space:nowrap}
+
+/* ===== COURTYARD DIVIDER ===== */
+.courtyard-divider{position:relative;height:80vh;min-height:480px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.courtyard-bg{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=1920&q=85&auto=format&fit=crop');background-size:cover;background-position:center;will-change:transform}
+.courtyard-overlay{position:absolute;inset:0;background:rgba(26,15,10,.62)}
+.courtyard-content{position:relative;z-index:2;text-align:center;padding:0 40px;max-width:800px}
+.courtyard-eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--amber);margin-bottom:20px}
+.courtyard-headline{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(32px,6vw,72px);color:var(--white);line-height:1.1;margin-bottom:28px}
+.courtyard-rule{width:48px;height:1px;background:var(--amber);margin:0 auto 24px}
+.courtyard-sub{font-size:16px;color:rgba(247,243,237,.5);letter-spacing:.06em}
+
+/* ===== ABOUT ===== */
+.about-section{display:grid;grid-template-columns:45fr 55fr;min-height:100vh}
+.about-text{padding:100px 64px;display:flex;flex-direction:column;justify-content:center;background:var(--cream)}
+.about-eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--terracotta);margin-bottom:24px}
+.about-headline{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(28px,3.5vw,52px);color:var(--espresso);line-height:1.1;margin-bottom:28px}
+.about-body{font-size:17px;line-height:1.85;color:var(--espresso);opacity:.5;margin-bottom:40px;max-width:420px}
+.about-founders{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:36px;padding-top:28px;border-top:.5px solid rgba(26,15,10,.1)}
+.founder-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--espresso);margin-bottom:4px}
+.founder-role{font-size:12px;color:var(--espresso);opacity:.35}
+.about-image{position:relative;overflow:hidden}
+.about-image img{width:100%;height:100%;object-fit:cover;transition:transform 1200ms ease-out}
+.about-section:hover .about-image img{transform:scale(1.04)}
+.about-year-badge{position:absolute;bottom:40px;left:40px;background:var(--terracotta);color:var(--cream);padding:12px 20px}
+.about-year-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:28px;letter-spacing:.05em;line-height:1}
+.about-year-label{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:9px;letter-spacing:.2em;text-transform:uppercase;opacity:.7}
+
+/* ===== GALLERY ===== */
+.gallery-section{padding:120px 40px;background:var(--linen)}
+.gallery-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:48px;flex-wrap:wrap;gap:24px}
+.gallery-eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--terracotta);margin-bottom:12px}
+.gallery-headline{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(28px,4vw,56px);color:var(--espresso);line-height:1.05}
+.gallery-filters{display:flex;gap:0;align-self:flex-end}
+.filter-pill{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--espresso);background:transparent;border:.5px solid rgba(26,15,10,.25);padding:9px 20px;cursor:pointer;transition:all 300ms ease;margin-right:-1px;border-radius:0}
+.filter-pill:hover,.filter-pill.active{background:var(--terracotta);border-color:var(--terracotta);color:var(--cream)}
+.gallery-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:200px;gap:6px}
+.g-item{position:relative;overflow:hidden;cursor:pointer}
+.g-item img{width:100%;height:100%;object-fit:cover;transition:transform 500ms var(--ease)}
+.g-item:hover img{transform:scale(1.06)}
+.g-overlay{position:absolute;inset:0;background:var(--terracotta);opacity:0;transition:opacity 350ms ease;mix-blend-mode:multiply}
+.g-item:hover .g-overlay{opacity:.25}
+.g-title{position:absolute;bottom:16px;left:16px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--white);opacity:0;transform:translateY(8px);transition:all 350ms ease}
+.g-item:hover .g-title{opacity:1;transform:translateY(0)}
+.g1{grid-column:span 5;grid-row:span 2}
+.g2{grid-column:span 4}
+.g3{grid-column:span 3}
+.g4{grid-column:span 4}
+.g5{grid-column:span 3}
+.g6{grid-column:span 5}
+.g7{grid-column:span 7}
+.g-hidden{opacity:0;pointer-events:none}
+
+/* ===== MENU SECTION ===== */
+.menu-section{background:var(--cream)}
+.menu-hero-block{padding:120px 40px 80px;text-align:center}
+.menu-eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--terracotta);margin-bottom:16px}
+.menu-headline{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(36px,6vw,80px);color:var(--espresso);margin-bottom:16px;line-height:1.05}
+.menu-sub{font-size:16px;color:var(--espresso);opacity:.4;max-width:480px;margin:0 auto;line-height:1.6}
+.menu-cat-nav{position:sticky;top:64px;z-index:9999;background:rgba(247,243,237,.97);backdrop-filter:blur(8px);border-bottom:.5px solid rgba(26,15,10,.08);display:flex;align-items:center;justify-content:center;padding:0 40px;overflow-x:auto;scrollbar-width:none}
+.menu-cat-nav::-webkit-scrollbar{display:none}
+.cat-btn{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--espresso);opacity:.35;background:none;border:none;border-bottom:2px solid transparent;padding:18px 18px 16px;white-space:nowrap;cursor:pointer;transition:opacity 300ms ease,border-color 300ms ease,color 300ms ease}
+.cat-btn:hover{opacity:.65}
+.cat-btn.active{opacity:1;color:var(--terracotta);border-bottom-color:var(--terracotta)}
+.menu-cat-block{max-width:1100px;margin:0 auto;padding:80px 40px 48px}
+.cat-eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--terracotta);margin-bottom:8px}
+.cat-name{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(26px,3.5vw,44px);color:var(--espresso);padding-bottom:20px;border-bottom:.5px solid rgba(26,15,10,.1);margin-bottom:40px}
+.cat-count{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.15em;color:rgba(26,15,10,.2);margin-left:12px}
+.dish-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 60px}
+.dish-grid.single{grid-template-columns:1fr;max-width:520px}
+.dish-grid.tri{grid-template-columns:repeat(3,1fr);gap:0 40px}
+.dish{padding:24px 0;border-bottom:.5px solid rgba(26,15,10,.07);transition:background 300ms ease}
+.dish:last-child{border-bottom:none}
+.dish-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+.dish-name{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:18px;color:var(--espresso);line-height:1.3}
+.dish-price{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:.06em;color:var(--terracotta);flex-shrink:0}
+.dish-desc{font-size:13px;line-height:1.65;color:var(--espresso);opacity:.4}
+.dish-badge{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);background:var(--terracotta);padding:3px 8px;margin-left:10px;vertical-align:middle;position:relative;top:-2px;display:inline-block}
+.dish-sig{padding:32px 24px;margin:6px -24px;background:rgba(139,58,30,.04);border-bottom:.5px solid rgba(139,58,30,.12)}
+.dish-sig .dish-name{font-size:22px}
+.dish-specs{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-top:14px}
+.spec-row{border-bottom:.5px solid rgba(26,15,10,.06);padding-bottom:6px}
+.spec-label{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--terracotta);opacity:.75;margin-bottom:3px}
+.spec-val{font-size:13px;color:var(--espresso);opacity:.45}
+.menu-img-break{position:relative;height:42vh;min-height:280px;overflow:hidden;margin-bottom:0}
+.menu-img-break img{width:100%;height:100%;object-fit:cover;transition:transform 14s ease-out}
+.menu-img-break:hover img{transform:scale(1.04)}
+.menu-img-break-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,var(--cream) 0%,transparent 25%,transparent 75%,var(--cream) 100%)}
+
+/* ===== EVENTS ===== */
+.events-section{background:var(--black);padding:120px 40px;min-height:auto}
+.events-inner{max-width:1100px;margin:0 auto}
+.events-eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--terracotta);margin-bottom:16px}
+.events-headline{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(32px,6vw,76px);color:var(--cream);margin-bottom:64px;line-height:1.05}
+.events-grid{display:grid;grid-template-columns:repeat(4,1fr);border:.5px solid rgba(247,243,237,.12);margin-bottom:56px}
+.event-col{padding:40px 28px;border-right:.5px solid rgba(247,243,237,.12);transition:background 350ms ease}
+.event-col:last-child{border-right:none}
+.event-col:hover{background:rgba(247,243,237,.04)}
+.event-icon{font-size:26px;margin-bottom:20px;display:block}
+.event-label{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--cream);margin-bottom:12px}
+.event-desc{font-size:14px;line-height:1.7;color:rgba(247,243,237,.45)}
+.events-cta{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);background:transparent;border:1px solid rgba(247,243,237,.4);padding:16px 48px;cursor:pointer;text-decoration:none;display:inline-block;transition:all 300ms ease}
+.events-cta:hover{background:var(--cream);color:var(--black);border-color:var(--cream)}
+
+/* ===== RESERVATION ===== */
+.reservation-section{padding:120px 40px;background:var(--cream);display:flex;flex-direction:column;align-items:center}
+.res-eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--terracotta);margin-bottom:14px;text-align:center}
+.res-headline{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(32px,5vw,68px);color:var(--espresso);margin-bottom:56px;text-align:center}
+.res-form{width:100%;max-width:560px;display:flex;flex-direction:column;gap:32px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.form-group{display:flex;flex-direction:column;gap:8px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(26,15,10,.35)}
+.form-input,.form-select,.form-textarea{font-family:'Lato',sans-serif;font-weight:300;font-size:16px;color:var(--espresso);background:transparent;border:none;border-bottom:1px solid rgba(26,15,10,.18);padding:10px 0;outline:none;transition:border-color 300ms ease;-webkit-appearance:none;appearance:none;border-radius:0}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-bottom-color:var(--terracotta)}
+.form-textarea{resize:none;min-height:72px}
+.form-select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 5 5-5' stroke='%231a0f0a' stroke-width='1.2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 2px center}
+.form-err{font-size:11px;color:var(--terracotta);min-height:14px;margin-top:2px;opacity:0;transition:opacity 250ms ease}
+.form-err.show{opacity:1}
+.res-submit{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);background:var(--terracotta);border:none;padding:18px;width:100%;cursor:pointer;transition:background 300ms ease,transform 300ms ease;margin-top:8px;border-radius:0}
+.res-submit:hover{background:var(--espresso);transform:translateY(-1px)}
+.res-whatsapp{text-align:center;margin-top:20px;font-size:13px;color:rgba(26,15,10,.35)}
+.res-whatsapp a{color:var(--terracotta);text-decoration:none;font-weight:400}
+
+/* TAKEOVER */
+.takeover{position:fixed;inset:0;background:var(--cream);z-index:20000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transform:translateY(100%);transition:transform 800ms var(--ease)}
+.takeover.active{transform:translateY(0)}
+.takeover-text{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:clamp(48px,12vw,120px);color:var(--terracotta);text-align:center;line-height:1}
+.takeover-sub{font-size:17px;color:var(--espresso);opacity:0;transition:opacity 700ms var(--ease) 500ms}
+.takeover.active .takeover-sub{opacity:.45}
+.takeover-back{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--terracotta);text-decoration:none;border-bottom:1px solid var(--terracotta);padding-bottom:2px;opacity:0;margin-top:16px;transition:opacity 700ms var(--ease) 800ms;cursor:pointer;background:none;border-left:none;border-right:none;border-top:none}
+.takeover.active .takeover-back{opacity:.7}
+
+/* ===== FOOTER ===== */
+.footer{background:var(--espresso);padding:80px 40px 36px}
+.footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1.2fr;gap:60px;margin-bottom:60px}
+.footer-wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);margin-bottom:14px}
+.footer-tagline{font-size:14px;color:rgba(247,243,237,.38);line-height:1.7;max-width:260px}
+.footer-heading{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--terracotta);margin-bottom:20px}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-links a{font-size:14px;color:rgba(247,243,237,.45);text-decoration:none;transition:color 300ms ease}
+.footer-links a:hover{color:var(--cream)}
+.footer-contact{font-size:14px;color:rgba(247,243,237,.4);line-height:1.9}
+.footer-contact a{color:var(--amber);text-decoration:none}
+.footer-bottom{border-top:.5px solid rgba(247,243,237,.08);padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:rgba(247,243,237,.22);font-family:'Barlow Condensed',sans-serif;letter-spacing:.12em;text-transform:uppercase}
+
+/* WHATSAPP */
+.wa-float{position:fixed;bottom:28px;right:28px;width:54px;height:54px;background:var(--terracotta);border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:9998;transition:transform 350ms var(--ease),box-shadow 350ms ease;cursor:pointer;text-decoration:none;box-shadow:0 4px 20px rgba(139,58,30,.35)}
+.wa-float:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(139,58,30,.5)}
+.wa-float svg{width:26px;height:26px;fill:var(--cream)}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .reveal-section,.reveal-section.flipped{grid-template-columns:1fr}
+  .reveal-img{height:55vw;min-height:300px}
+  .reveal-section.flipped .reveal-text{order:0}
+  .about-section{grid-template-columns:1fr}
+  .about-image{height:60vw}
+  .events-grid{grid-template-columns:1fr 1fr}
+  .event-col{border-right:none;border-bottom:.5px solid rgba(247,243,237,.12)}
+  .event-col:last-child{border-bottom:none}
+  .dish-grid{grid-template-columns:1fr}
+  .dish-grid.tri{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:40px}
+}
+@media(max-width:768px){
+  .sticky-nav{padding:0 20px;height:56px}
+  .nav-links{display:none}
+  .gallery-grid{grid-template-columns:repeat(6,1fr);grid-auto-rows:160px}
+  .g1{grid-column:span 6;grid-row:span 1}
+  .g2,.g3,.g4,.g5,.g6,.g7{grid-column:span 3}
+  .events-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr;gap:24px}
+  .reveal-text{padding:56px 28px}
+  .footer-grid{grid-template-columns:1fr;gap:32px}
+  .gallery-header{flex-direction:column;align-items:flex-start}
+  .menu-cat-nav{top:56px;justify-content:flex-start}
+  .dish-grid.tri{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav" id="stickyNav" aria-label="Main navigation">
+  <div class="nav-wordmark">Tuscany Courtyard</div>
+  <ul class="nav-links">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#reserve">Contact</a></li>
+  </ul>
+  <a href="#reserve" class="nav-reserve">Reserve</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero" aria-label="Hero">
+  <div class="hero-bg" id="heroBg" role="img" aria-label="Tuscany Courtyard restaurant interior"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-wordmark">Tuscany Courtyard</div>
+  <div class="hero-est">Est. 2012 · Islamabad</div>
+  <div class="hero-content">
+    <div class="hero-line-1" id="heroLine1" aria-hidden="true"></div>
+    <div class="hero-line-2" id="heroLine2" aria-hidden="true"></div>
+    <h1 style="position:absolute;opacity:0;pointer-events:none">Authentic is Everything — Tuscany Courtyard Islamabad</h1>
+    <p class="hero-sub">Kohsar Market · F-6 Islamabad · Since 2012</p>
+    <div class="hero-ctas">
+      <a href="#reserve" class="btn-primary">Reserve a Table</a>
+      <a href="#menu" class="btn-ghost">View Menu</a>
+    </div>
+  </div>
+  <div class="hero-scroll" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- PRODUCT REVEAL 01 — PIZZA -->
+<section class="reveal-section" aria-label="Signature pizza">
+  <div class="reveal-img sr-scale">
+    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1200&q=90&auto=format&fit=crop" alt="Tuscany Special thin-crust pizza" loading="lazy">
+    <div class="reveal-img-overlay"></div>
+  </div>
+  <div class="reveal-text">
+    <div class="reveal-kicker sr">01 / Signature</div>
+    <div class="reveal-name sr" style="transition-delay:80ms">Tuscany<br>Special</div>
+    <div class="reveal-desc sr" style="transition-delay:140ms">Stone-fired thin crust. Imported mozzarella. San Marzano tomatoes. Unchanged since the day we opened.</div>
+    <div class="reveal-specs sr" style="transition-delay:200ms">
+      <div class="reveal-spec"><div class="reveal-spec-label">Crust</div><div class="reveal-spec-val">Stone-fired thin</div></div>
+      <div class="reveal-spec"><div class="reveal-spec-label">Cheese</div><div class="reveal-spec-val">Imported mozzarella</div></div>
+      <div class="reveal-spec"><div class="reveal-spec-label">Sauce</div><div class="reveal-spec-val">San Marzano tomatoes</div></div>
+      <div class="reveal-spec"><div class="reveal-spec-label">Cook time</div><div class="reveal-spec-val">7 minutes</div></div>
+    </div>
+    <div class="reveal-price sr" style="transition-delay:260ms">Rs. 1,450</div>
+    <div class="reveal-price-label sr" style="transition-delay:280ms">Per pizza · Serves 1–2</div>
+    <a href="#menu" class="btn-primary sr" style="transition-delay:320ms;align-self:flex-start">View Full Menu →</a>
+    <div class="reveal-num" aria-hidden="true">01</div>
+  </div>
+</section>
+
+<!-- PRODUCT REVEAL 02 — STEAK (flipped) -->
+<section class="reveal-section flipped" aria-label="Signature steak">
+  <div class="reveal-img sr-scale">
+    <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=1200&q=90&auto=format&fit=crop" alt="Beef Deck Steak" loading="lazy">
+    <div class="reveal-img-overlay"></div>
+  </div>
+  <div class="reveal-text" style="background:var(--linen)">
+    <div class="reveal-kicker sr">02 / Most Ordered</div>
+    <div class="reveal-name sr" style="transition-delay:80ms">Beef Deck<br>Steak</div>
+    <div class="reveal-desc sr" style="transition-delay:140ms">The most-ordered dish since 2012. Grain-fed beef deck, grilled to your preference. Ask anyone in Kohsar Market.</div>
+    <div class="reveal-specs sr" style="transition-delay:200ms">
+      <div class="reveal-spec"><div class="reveal-spec-label">Cut</div><div class="reveal-spec-val">Deck steak · grain-fed</div></div>
+      <div class="reveal-spec"><div class="reveal-spec-label">Cook</div><div class="reveal-spec-val">Your preference</div></div>
+      <div class="reveal-spec"><div class="reveal-spec-label">Sauce</div><div class="reveal-spec-val">Peppercorn / Mushroom</div></div>
+      <div class="reveal-spec"><div class="reveal-spec-label">Served with</div><div class="reveal-spec-val">Mashed potatoes</div></div>
+    </div>
+    <div class="reveal-price sr" style="transition-delay:260ms">Rs. 1,850</div>
+    <div class="reveal-price-label sr" style="transition-delay:280ms">Per person · Grill to order</div>
+    <a href="#reserve" class="btn-primary sr" style="transition-delay:320ms;align-self:flex-start">Reserve Your Table →</a>
+    <div class="reveal-num" aria-hidden="true">02</div>
+  </div>
+</section>
+
+<!-- PRODUCT REVEAL 03 — COURTYARD -->
+<section class="reveal-section" aria-label="The courtyard">
+  <div class="reveal-img sr-scale">
+    <img src="https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=1200&q=90&auto=format&fit=crop" alt="Tuscany Courtyard outdoor dining area" loading="lazy">
+    <div class="reveal-img-overlay"></div>
+  </div>
+  <div class="reveal-text">
+    <div class="reveal-kicker sr">03 / The Venue</div>
+    <div class="reveal-name sr" style="transition-delay:80ms">The<br>Courtyard</div>
+    <div class="reveal-desc sr" style="transition-delay:140ms">Lush greenery, a stone fountain, and open sky above Islamabad. Our outdoor courtyard is why guests return — not just for the food.</div>
+    <div class="reveal-specs sr" style="transition-delay:200ms">
+      <div class="reveal-spec"><div class="reveal-spec-label">Setting</div><div class="reveal-spec-val">Open-air courtyard</div></div>
+      <div class="reveal-spec"><div class="reveal-spec-label">Feature</div><div class="reveal-spec-val">Stone fountain</div></div>
+      <div class="reveal-spec"><div class="reveal-spec-label">Rooftop</div><div class="reveal-spec-val">Margalla Hills view</div></div>
+      <div class="reveal-spec"><div class="reveal-spec-label">Fireplace</div><div class="reveal-spec-val">Available year-round</div></div>
+    </div>
+    <a href="#events" class="btn-primary sr" style="transition-delay:280ms;align-self:flex-start">Private Events →</a>
+    <div class="reveal-num" aria-hidden="true">03</div>
+  </div>
+</section>
+
+<!-- KINETIC WORD SECTION -->
+<section class="kinetic-section" id="kineticSection" aria-label="Menu highlights">
+  <div class="kinetic-word" data-index="0">PIZZA</div>
+  <div class="kinetic-word" data-index="1">PASTA</div>
+  <div class="kinetic-word" data-index="2">STEAK</div>
+  <div class="kinetic-word" data-index="3">COURT<span>YARD</span></div>
+  <div class="kinetic-word" data-index="4">SINCE&nbsp;2012</div>
+  <div class="kinetic-since" aria-hidden="true">Kohsar Market · Islamabad</div>
+</section>
+
+<!-- COURTYARD DIVIDER -->
+<div class="courtyard-divider">
+  <div class="courtyard-bg" id="courtyardBg"></div>
+  <div class="courtyard-overlay"></div>
+  <div class="courtyard-content sr">
+    <div class="courtyard-eyebrow">Kohsar Market · F-6</div>
+    <div class="courtyard-headline">"Not a restaurant.<br>A ritual."</div>
+    <div class="courtyard-rule"></div>
+    <div class="courtyard-sub">Where Islamabad meets Tuscany.</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about-section" id="about" aria-label="Our story">
+  <div class="about-text">
+    <div class="about-eyebrow sr">The Founding</div>
+    <div class="about-headline sr" style="transition-delay:80ms">Three Friends. One Trip to Tuscany. One Obsession.</div>
+    <div class="about-body sr" style="transition-delay:160ms">In 2012, Sikander Bakhtiar, Aamir Rashid, and Khurram Khan returned from Italy with a single mission — to bring stone-oven pizza and genuine Italian hospitality to Islamabad. No shortcuts. No compromises. Twelve years later, nothing has changed.</div>
+    <div class="about-founders sr" style="transition-delay:220ms">
+      <div><div class="founder-name">Sikander Bakhtiar</div><div class="founder-role">Co-Founder</div></div>
+      <div><div class="founder-name">Aamir Rashid</div><div class="founder-role">Co-Founder</div></div>
+      <div><div class="founder-name">Khurram Khan</div><div class="founder-role">Co-Founder</div></div>
+    </div>
+    <a href="#reserve" class="btn-primary sr" style="transition-delay:280ms;align-self:flex-start">Reserve a Table</a>
+  </div>
+  <div class="about-image sr-right" style="transition-delay:100ms">
+    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1000&q=90&auto=format&fit=crop" alt="Tuscany Courtyard interior dining" loading="lazy">
+    <div class="about-year-badge">
+      <div class="about-year-num">2012</div>
+      <div class="about-year-label">Est. Islamabad</div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery-section" id="gallery" aria-label="Gallery">
+  <div class="gallery-header">
+    <div>
+      <div class="gallery-eyebrow sr">The Atmosphere</div>
+      <div class="gallery-headline sr" style="transition-delay:80ms">Every Corner<br>Tells a Story.</div>
+    </div>
+    <div class="gallery-filters sr" style="transition-delay:120ms" role="group" aria-label="Filter gallery">
+      <button class="filter-pill active" data-filter="all">All</button>
+      <button class="filter-pill" data-filter="food">Food</button>
+      <button class="filter-pill" data-filter="spaces">Spaces</button>
+      <button class="filter-pill" data-filter="moments">Moments</button>
+    </div>
+  </div>
+  <div class="gallery-grid">
+    <div class="g-item g1 sr-scale" data-cat="spaces" style="transition-delay:160ms">
+      <img src="https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=900&q=85&auto=format&fit=crop" alt="The courtyard fountain" loading="lazy">
+      <div class="g-overlay"></div><div class="g-title">The Courtyard</div>
+    </div>
+    <div class="g-item g2 sr-scale" data-cat="food" style="transition-delay:200ms">
+      <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=700&q=85&auto=format&fit=crop" alt="Thin crust pizza" loading="lazy">
+      <div class="g-overlay"></div><div class="g-title">Thin Crust</div>
+    </div>
+    <div class="g-item g3 sr-scale" data-cat="spaces" style="transition-delay:230ms">
+      <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=700&q=85&auto=format&fit=crop" alt="Interior dining" loading="lazy">
+      <div class="g-overlay"></div><div class="g-title">Interior</div>
+    </div>
+    <div class="g-item g4 sr-scale" data-cat="spaces" style="transition-delay:260ms">
+      <img src="https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=900&q=85&auto=format&fit=crop" alt="Rooftop dining" loading="lazy">
+      <div class="g-overlay"></div><div class="g-title">Rooftop</div>
+    </div>
+    <div class="g-item g5 sr-scale" data-cat="moments" style="transition-delay:290ms">
+      <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=700&q=85&auto=format&fit=crop" alt="Fireplace lounge" loading="lazy">
+      <div class="g-overlay"></div><div class="g-title">Fireplace</div>
+    </div>
+    <div class="g-item g6 sr-scale" data-cat="food" style="transition-delay:320ms">
+      <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=900&q=85&auto=format&fit=crop" alt="Handcrafted pasta" loading="lazy">
+      <div class="g-overlay"></div><div class="g-title">Pasta</div>
+    </div>
+    <div class="g-item g7 sr-scale" data-cat="moments" style="transition-delay:350ms">
+      <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=1000&q=85&auto=format&fit=crop" alt="Evening dining" loading="lazy">
+      <div class="g-overlay"></div><div class="g-title">Evenings</div>
+    </div>
+  </div>
+</section>
+
+<!-- FULL MENU -->
+<section class="menu-section" id="menu" aria-label="Full menu">
+  <div class="menu-hero-block">
+    <div class="menu-eyebrow sr">The Complete Menu</div>
+    <div class="menu-headline sr" style="transition-delay:80ms">Every Dish.<br>One Standard.</div>
+    <div class="menu-sub sr" style="transition-delay:140ms">Stone-oven pizza, handcrafted pasta, and grilled steaks — straight from Tuscany to your table.</div>
+  </div>
+  <div class="menu-cat-nav" id="menuCatNav" role="navigation" aria-label="Menu categories">
+    <button class="cat-btn active" data-cat="starters">Starters</button>
+    <button class="cat-btn" data-cat="pizza">Pizza</button>
+    <button class="cat-btn" data-cat="pasta">Pasta</button>
+    <button class="cat-btn" data-cat="mains">Mains</button>
+    <button class="cat-btn" data-cat="sides">Sides</button>
+    <button class="cat-btn" data-cat="desserts">Desserts</button>
+    <button class="cat-btn" data-cat="beverages">Beverages</button>
+  </div>
+
+  <!-- STARTERS -->
+  <div class="menu-cat-block" id="cat-starters">
+    <div class="cat-eyebrow sr">01 / Opening</div>
+    <div class="cat-name sr" style="transition-delay:60ms">Starters &amp; Soups<span class="cat-count">10</span></div>
+    <div class="dish-grid">
+      <div class="dish sr" style="transition-delay:100ms"><div class="dish-top"><span class="dish-name">Garlic Bread</span><span class="dish-price">Rs. 450</span></div><div class="dish-desc">Toasted ciabatta with garlic butter and herbs, served with marinara dip.</div></div>
+      <div class="dish sr" style="transition-delay:130ms"><div class="dish-top"><span class="dish-name">Bruschetta Classica</span><span class="dish-price">Rs. 550</span></div><div class="dish-desc">Diced tomatoes, fresh basil, garlic, and extra virgin olive oil on grilled bread.</div></div>
+      <div class="dish sr" style="transition-delay:160ms"><div class="dish-top"><span class="dish-name">Chicken Wings</span><span class="dish-price">Rs. 750</span></div><div class="dish-desc">Crispy fried wings in buffalo sauce with blue cheese dip. 6 pieces.</div></div>
+      <div class="dish sr" style="transition-delay:190ms"><div class="dish-top"><span class="dish-name">Fried Mushrooms</span><span class="dish-price">Rs. 650</span></div><div class="dish-desc">Golden-breaded button mushrooms with garlic aioli.</div></div>
+      <div class="dish sr" style="transition-delay:220ms"><div class="dish-top"><span class="dish-name">Caesar Salad</span><span class="dish-price">Rs. 650</span></div><div class="dish-desc">Crisp romaine, parmesan shavings, croutons, and classic Caesar dressing.</div></div>
+      <div class="dish sr" style="transition-delay:250ms"><div class="dish-top"><span class="dish-name">Chicken Caesar Salad</span><span class="dish-price">Rs. 850</span></div><div class="dish-desc">Grilled chicken breast over Caesar salad with extra parmesan.</div></div>
+      <div class="dish sr" style="transition-delay:280ms"><div class="dish-top"><span class="dish-name">Minestrone Soup</span><span class="dish-price">Rs. 450</span></div><div class="dish-desc">Traditional Italian vegetable soup with pasta, beans, and fresh herbs.</div></div>
+      <div class="dish sr" style="transition-delay:310ms"><div class="dish-top"><span class="dish-name">Mozzarella Sticks</span><span class="dish-price">Rs. 650</span></div><div class="dish-desc">Golden-fried mozzarella with marinara dipping sauce.</div></div>
+      <div class="dish sr" style="transition-delay:340ms"><div class="dish-top"><span class="dish-name">Potato Skins</span><span class="dish-price">Rs. 550</span></div><div class="dish-desc">Crispy baked potato skins loaded with cheddar and sour cream.</div></div>
+      <div class="dish sr" style="transition-delay:370ms"><div class="dish-top"><span class="dish-name">Chicken Strips</span><span class="dish-price">Rs. 750</span></div><div class="dish-desc">Crispy chicken breast strips with honey mustard dip.</div></div>
+    </div>
+  </div>
+
+  <!-- PIZZA IMAGE BREAK -->
+  <div class="menu-img-break sr-scale">
+    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1920&q=90&auto=format&fit=crop" alt="Stone-oven pizza" loading="lazy">
+    <div class="menu-img-break-overlay"></div>
+  </div>
+
+  <!-- PIZZA -->
+  <div class="menu-cat-block" id="cat-pizza">
+    <div class="cat-eyebrow sr">02 / Signature</div>
+    <div class="cat-name sr" style="transition-delay:60ms">Pizza<span class="cat-count">13</span></div>
+    <div class="dish-grid">
+      <div class="dish dish-sig sr" style="transition-delay:100ms;grid-column:1/-1">
+        <div class="dish-top"><span class="dish-name">Tuscany Special<span class="dish-badge">Signature</span></span><span class="dish-price">Rs. 1,450</span></div>
+        <div class="dish-desc">Our flagship. Stone-fired thin crust with imported mozzarella, pepperoni, Italian sausage, mushrooms, olives, and San Marzano tomato sauce.</div>
+        <div class="dish-specs"><div class="spec-row"><div class="spec-label">Crust</div><div class="spec-val">Stone-fired thin</div></div><div class="spec-row"><div class="spec-label">Cheese</div><div class="spec-val">Imported mozzarella</div></div><div class="spec-row"><div class="spec-label">Sauce</div><div class="spec-val">San Marzano tomatoes</div></div><div class="spec-row"><div class="spec-label">Cook time</div><div class="spec-val">7 minutes</div></div></div>
+      </div>
+      <div class="dish sr" style="transition-delay:160ms"><div class="dish-top"><span class="dish-name">Margherita</span><span class="dish-price">Rs. 950</span></div><div class="dish-desc">The original. Tomato sauce, fresh mozzarella, basil.</div></div>
+      <div class="dish sr" style="transition-delay:190ms"><div class="dish-top"><span class="dish-name">Pepperoni</span><span class="dish-price">Rs. 1,250</span></div><div class="dish-desc">Classic pepperoni with mozzarella and tomato sauce.</div></div>
+      <div class="dish sr" style="transition-delay:220ms"><div class="dish-top"><span class="dish-name">Four Cheese</span><span class="dish-price">Rs. 1,250</span></div><div class="dish-desc">Mozzarella, cheddar, parmesan, and gorgonzola.</div></div>
+      <div class="dish sr" style="transition-delay:250ms"><div class="dish-top"><span class="dish-name">BBQ Chicken</span><span class="dish-price">Rs. 1,350</span></div><div class="dish-desc">Grilled chicken, BBQ sauce, red onion, and mozzarella.</div></div>
+      <div class="dish sr" style="transition-delay:280ms"><div class="dish-top"><span class="dish-name">Meat Lovers</span><span class="dish-price">Rs. 1,450</span></div><div class="dish-desc">Pepperoni, Italian sausage, ground beef, and smoked ham.</div></div>
+      <div class="dish sr" style="transition-delay:310ms"><div class="dish-top"><span class="dish-name">Chicken Tikka Pizza</span><span class="dish-price">Rs. 1,350</span></div><div class="dish-desc">Marinated chicken tikka, onion, capsicum, mint yogurt drizzle.</div></div>
+      <div class="dish sr" style="transition-delay:340ms"><div class="dish-top"><span class="dish-name">Vegetariana</span><span class="dish-price">Rs. 1,100</span></div><div class="dish-desc">Bell peppers, mushrooms, olives, onions, and tomatoes.</div></div>
+      <div class="dish sr" style="transition-delay:370ms"><div class="dish-top"><span class="dish-name">Hawaiian</span><span class="dish-price">Rs. 1,250</span></div><div class="dish-desc">Ham, pineapple, and mozzarella with tomato sauce.</div></div>
+      <div class="dish sr" style="transition-delay:400ms"><div class="dish-top"><span class="dish-name">Sicilian</span><span class="dish-price">Rs. 1,350</span></div><div class="dish-desc">Anchovies, capers, olives, tomatoes, and oregano.</div></div>
+      <div class="dish sr" style="transition-delay:430ms"><div class="dish-top"><span class="dish-name">Diavola</span><span class="dish-price">Rs. 1,250</span></div><div class="dish-desc">Spicy salami, chili flakes, mozzarella, and tomato sauce.</div></div>
+      <div class="dish sr" style="transition-delay:460ms"><div class="dish-top"><span class="dish-name">Mushroom Truffle</span><span class="dish-price">Rs. 1,450</span></div><div class="dish-desc">Mixed mushrooms, truffle oil, mozzarella, and garlic cream base.</div></div>
+      <div class="dish sr" style="transition-delay:490ms"><div class="dish-top"><span class="dish-name">Quattro Formaggi</span><span class="dish-price">Rs. 1,250</span></div><div class="dish-desc">Four Italian cheeses on thin crust with a drizzle of honey.</div></div>
+    </div>
+  </div>
+
+  <!-- PASTA -->
+  <div class="menu-cat-block" id="cat-pasta">
+    <div class="cat-eyebrow sr">03 / Handcrafted</div>
+    <div class="cat-name sr" style="transition-delay:60ms">Pasta<span class="cat-count">9</span></div>
+    <div class="dish-grid">
+      <div class="dish sr" style="transition-delay:100ms"><div class="dish-top"><span class="dish-name">Spaghetti Bolognese</span><span class="dish-price">Rs. 950</span></div><div class="dish-desc">Slow-cooked beef and tomato ragù over al dente spaghetti.</div></div>
+      <div class="dish sr" style="transition-delay:130ms"><div class="dish-top"><span class="dish-name">Penne Arrabbiata</span><span class="dish-price">Rs. 850</span></div><div class="dish-desc">Penne in spicy tomato sauce with garlic, chili, and fresh parsley.</div></div>
+      <div class="dish sr" style="transition-delay:160ms"><div class="dish-top"><span class="dish-name">Fettuccine Alfredo</span><span class="dish-price">Rs. 1,050</span></div><div class="dish-desc">Silky cream and parmesan sauce over fresh fettuccine.</div></div>
+      <div class="dish sr" style="transition-delay:190ms"><div class="dish-top"><span class="dish-name">Spaghetti Carbonara</span><span class="dish-price">Rs. 1,100</span></div><div class="dish-desc">Guanciale, egg yolk, pecorino romano, and black pepper.</div></div>
+      <div class="dish sr" style="transition-delay:220ms"><div class="dish-top"><span class="dish-name">Penne Pesto</span><span class="dish-price">Rs. 950</span></div><div class="dish-desc">Fresh basil pesto with pine nuts, parmesan, and penne.</div></div>
+      <div class="dish sr" style="transition-delay:250ms"><div class="dish-top"><span class="dish-name">Lasagna</span><span class="dish-price">Rs. 1,100</span></div><div class="dish-desc">Layers of pasta sheets, bolognese, béchamel, and mozzarella. Baked golden.</div></div>
+      <div class="dish sr" style="transition-delay:280ms"><div class="dish-top"><span class="dish-name">Ravioli</span><span class="dish-price">Rs. 1,200</span></div><div class="dish-desc">Cheese and spinach ravioli in a sage butter sauce.</div></div>
+      <div class="dish sr" style="transition-delay:310ms"><div class="dish-top"><span class="dish-name">Seafood Linguine</span><span class="dish-price">Rs. 1,450</span></div><div class="dish-desc">Linguine with prawns, mussels, calamari in white wine garlic sauce.</div></div>
+      <div class="dish sr" style="transition-delay:340ms"><div class="dish-top"><span class="dish-name">Chicken Penne</span><span class="dish-price">Rs. 1,050</span></div><div class="dish-desc">Grilled chicken, mushrooms, and cream sauce with penne.</div></div>
+    </div>
+  </div>
+
+  <!-- STEAK IMAGE BREAK -->
+  <div class="menu-img-break sr-scale">
+    <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=1920&q=90&auto=format&fit=crop" alt="Beef deck steak" loading="lazy">
+    <div class="menu-img-break-overlay"></div>
+  </div>
+
+  <!-- MAINS -->
+  <div class="menu-cat-block" id="cat-mains">
+    <div class="cat-eyebrow sr">04 / From the Grill</div>
+    <div class="cat-name sr" style="transition-delay:60ms">Mains<span class="cat-count">8</span></div>
+    <div class="dish-grid">
+      <div class="dish dish-sig sr" style="transition-delay:100ms;grid-column:1/-1">
+        <div class="dish-top"><span class="dish-name">Beef Deck Steak<span class="dish-badge">Most Ordered</span></span><span class="dish-price">Rs. 1,850</span></div>
+        <div class="dish-desc">The most-ordered dish since 2012. Ask anyone in Kohsar Market. Grain-fed beef deck steak, grilled to your preference.</div>
+        <div class="dish-specs"><div class="spec-row"><div class="spec-label">Cut</div><div class="spec-val">Deck steak · grain-fed</div></div><div class="spec-row"><div class="spec-label">Cook</div><div class="spec-val">Your preference</div></div><div class="spec-row"><div class="spec-label">Sauce</div><div class="spec-val">Peppercorn / Mushroom</div></div><div class="spec-row"><div class="spec-label">Served with</div><div class="spec-val">Mashed potatoes</div></div></div>
+      </div>
+      <div class="dish sr" style="transition-delay:160ms"><div class="dish-top"><span class="dish-name">Chicken Steak</span><span class="dish-price">Rs. 1,450</span></div><div class="dish-desc">Grilled chicken breast with mushroom or pepper sauce, mashed potatoes.</div></div>
+      <div class="dish sr" style="transition-delay:190ms"><div class="dish-top"><span class="dish-name">Grilled Chicken Breast</span><span class="dish-price">Rs. 1,350</span></div><div class="dish-desc">Herb-marinated chicken breast, chargrilled. With sautéed vegetables.</div></div>
+      <div class="dish sr" style="transition-delay:220ms"><div class="dish-top"><span class="dish-name">Fish &amp; Chips</span><span class="dish-price">Rs. 1,250</span></div><div class="dish-desc">Beer-battered fish fillet with crispy fries and tartar sauce.</div></div>
+      <div class="dish sr" style="transition-delay:250ms"><div class="dish-top"><span class="dish-name">Lamb Chops</span><span class="dish-price">Rs. 1,950</span></div><div class="dish-desc">New Zealand lamb chops grilled with rosemary and garlic.</div></div>
+      <div class="dish sr" style="transition-delay:280ms"><div class="dish-top"><span class="dish-name">Chicken Cordon Bleu</span><span class="dish-price">Rs. 1,350</span></div><div class="dish-desc">Chicken breast stuffed with ham and Swiss cheese, breaded golden.</div></div>
+      <div class="dish sr" style="transition-delay:310ms"><div class="dish-top"><span class="dish-name">Grilled Salmon</span><span class="dish-price">Rs. 1,650</span></div><div class="dish-desc">Atlantic salmon fillet with lemon dill sauce and seasonal vegetables.</div></div>
+      <div class="dish sr" style="transition-delay:340ms"><div class="dish-top"><span class="dish-name">Mixed Grill Platter</span><span class="dish-price">Rs. 2,250</span></div><div class="dish-desc">Beef steak, chicken tikka, lamb chop, and grilled prawns. For two.</div></div>
+    </div>
+  </div>
+
+  <!-- SIDES -->
+  <div class="menu-cat-block" id="cat-sides">
+    <div class="cat-eyebrow sr">05 / On the Side</div>
+    <div class="cat-name sr" style="transition-delay:60ms">Sides<span class="cat-count">6</span></div>
+    <div class="dish-grid single">
+      <div class="dish sr" style="transition-delay:100ms"><div class="dish-top"><span class="dish-name">French Fries</span><span class="dish-price">Rs. 350</span></div><div class="dish-desc">Crispy golden fries with ketchup.</div></div>
+      <div class="dish sr" style="transition-delay:130ms"><div class="dish-top"><span class="dish-name">Mashed Potatoes</span><span class="dish-price">Rs. 400</span></div><div class="dish-desc">Creamy butter mashed potatoes with gravy.</div></div>
+      <div class="dish sr" style="transition-delay:160ms"><div class="dish-top"><span class="dish-name">Sautéed Vegetables</span><span class="dish-price">Rs. 450</span></div><div class="dish-desc">Seasonal vegetables sautéed in olive oil and garlic.</div></div>
+      <div class="dish sr" style="transition-delay:190ms"><div class="dish-top"><span class="dish-name">Coleslaw</span><span class="dish-price">Rs. 300</span></div><div class="dish-desc">Fresh cabbage and carrot slaw with creamy dressing.</div></div>
+      <div class="dish sr" style="transition-delay:220ms"><div class="dish-top"><span class="dish-name">Garlic Bread (4 pcs)</span><span class="dish-price">Rs. 450</span></div><div class="dish-desc">Warm toasted ciabatta with garlic butter.</div></div>
+      <div class="dish sr" style="transition-delay:250ms"><div class="dish-top"><span class="dish-name">Steamed Rice</span><span class="dish-price">Rs. 350</span></div><div class="dish-desc">Basmati steamed rice.</div></div>
+    </div>
+  </div>
+
+  <!-- DESSERTS -->
+  <div class="menu-cat-block" id="cat-desserts">
+    <div class="cat-eyebrow sr">06 / Sweet Finish</div>
+    <div class="cat-name sr" style="transition-delay:60ms">Desserts<span class="cat-count">6</span></div>
+    <div class="dish-grid">
+      <div class="dish sr" style="transition-delay:100ms"><div class="dish-top"><span class="dish-name">Tiramisu</span><span class="dish-price">Rs. 750</span></div><div class="dish-desc">Mascarpone, espresso-soaked ladyfingers, cocoa dust. Classic and unchanged.</div></div>
+      <div class="dish sr" style="transition-delay:130ms"><div class="dish-top"><span class="dish-name">Chocolate Lava Cake</span><span class="dish-price">Rs. 850</span></div><div class="dish-desc">Warm chocolate cake with a molten center. Served with vanilla ice cream.</div></div>
+      <div class="dish sr" style="transition-delay:160ms"><div class="dish-top"><span class="dish-name">Panna Cotta</span><span class="dish-price">Rs. 700</span></div><div class="dish-desc">Silky vanilla cream with berry compote.</div></div>
+      <div class="dish sr" style="transition-delay:190ms"><div class="dish-top"><span class="dish-name">Cheesecake</span><span class="dish-price">Rs. 750</span></div><div class="dish-desc">New York-style baked cheesecake with strawberry drizzle.</div></div>
+      <div class="dish sr" style="transition-delay:220ms"><div class="dish-top"><span class="dish-name">Brownie &amp; Ice Cream</span><span class="dish-price">Rs. 800</span></div><div class="dish-desc">Warm chocolate brownie with a scoop of vanilla ice cream.</div></div>
+      <div class="dish sr" style="transition-delay:250ms"><div class="dish-top"><span class="dish-name">Crème Brûlée</span><span class="dish-price">Rs. 750</span></div><div class="dish-desc">Vanilla custard with a caramelized sugar crust.</div></div>
+    </div>
+  </div>
+
+  <!-- BEVERAGES -->
+  <div class="menu-cat-block" id="cat-beverages" style="padding-bottom:100px">
+    <div class="cat-eyebrow sr">07 / Drinks</div>
+    <div class="cat-name sr" style="transition-delay:60ms">Beverages<span class="cat-count">13</span></div>
+    <div class="dish-grid tri">
+      <div class="dish sr" style="transition-delay:100ms"><div class="dish-top"><span class="dish-name">Fresh Orange Juice</span><span class="dish-price">Rs. 350</span></div></div>
+      <div class="dish sr" style="transition-delay:120ms"><div class="dish-top"><span class="dish-name">Fresh Lime Soda</span><span class="dish-price">Rs. 300</span></div></div>
+      <div class="dish sr" style="transition-delay:140ms"><div class="dish-top"><span class="dish-name">Mango Shake</span><span class="dish-price">Rs. 450</span></div></div>
+      <div class="dish sr" style="transition-delay:160ms"><div class="dish-top"><span class="dish-name">Strawberry Shake</span><span class="dish-price">Rs. 450</span></div></div>
+      <div class="dish sr" style="transition-delay:180ms"><div class="dish-top"><span class="dish-name">Mint Lemonade</span><span class="dish-price">Rs. 350</span></div></div>
+      <div class="dish sr" style="transition-delay:200ms"><div class="dish-top"><span class="dish-name">Iced Coffee</span><span class="dish-price">Rs. 400</span></div></div>
+      <div class="dish sr" style="transition-delay:220ms"><div class="dish-top"><span class="dish-name">Cappuccino</span><span class="dish-price">Rs. 350</span></div></div>
+      <div class="dish sr" style="transition-delay:240ms"><div class="dish-top"><span class="dish-name">Espresso</span><span class="dish-price">Rs. 300</span></div></div>
+      <div class="dish sr" style="transition-delay:260ms"><div class="dish-top"><span class="dish-name">Latte</span><span class="dish-price">Rs. 400</span></div></div>
+      <div class="dish sr" style="transition-delay:280ms"><div class="dish-top"><span class="dish-name">Hot Chocolate</span><span class="dish-price">Rs. 400</span></div></div>
+      <div class="dish sr" style="transition-delay:300ms"><div class="dish-top"><span class="dish-name">Peach Iced Tea</span><span class="dish-price">Rs. 300</span></div></div>
+      <div class="dish sr" style="transition-delay:320ms"><div class="dish-top"><span class="dish-name">Soft Drinks</span><span class="dish-price">Rs. 250</span></div></div>
+      <div class="dish sr" style="transition-delay:340ms"><div class="dish-top"><span class="dish-name">Mineral Water</span><span class="dish-price">Rs. 200</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section class="events-section" id="events" aria-label="Private events">
+  <div class="events-inner">
+    <div class="events-eyebrow sr">Private Dining</div>
+    <div class="events-headline sr" style="transition-delay:80ms">Your Event.<br>Our Stage.</div>
+    <div class="events-grid sr" style="transition-delay:160ms">
+      <div class="event-col"><div class="event-icon">♪</div><div class="event-label">Live Music</div><div class="event-desc">Weekend sessions with local and visiting artists. Jazz, acoustic, and soul evenings.</div></div>
+      <div class="event-col"><div class="event-icon">🔥</div><div class="event-label">Fireplace Lounge</div><div class="event-desc">Intimate seating by the fire. Perfect for winter evenings and private conversations.</div></div>
+      <div class="event-col"><div class="event-icon">☁</div><div class="event-label">Rooftop</div><div class="event-desc">Open-air dining under the Islamabad sky with Margalla Hills views. Seats up to 80.</div></div>
+      <div class="event-col"><div class="event-icon">◇</div><div class="event-label">Table Service</div><div class="event-desc">Full-course Italian dining with dedicated staff. Curated menus for groups of any size.</div></div>
+    </div>
+    <a href="#reserve" class="events-cta sr" style="transition-delay:240ms">Enquire About Events</a>
+  </div>
+</section>
+
+<!-- RESERVATION -->
+<section class="reservation-section" id="reserve" aria-label="Make a reservation">
+  <div class="res-eyebrow sr">Book Your Table</div>
+  <div class="res-headline sr" style="transition-delay:80ms">Add to Your Evening.</div>
+  <form class="res-form sr" style="transition-delay:140ms" id="resForm" novalidate>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label" for="resName">Full Name</label><input class="form-input" type="text" id="resName" placeholder="Your full name" required><div class="form-err" id="errName"></div></div>
+      <div class="form-group"><label class="form-label" for="resPhone">Phone</label><input class="form-input" type="tel" id="resPhone" placeholder="+92 300 0000000" required><div class="form-err" id="errPhone"></div></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label" for="resDate">Date</label><input class="form-input" type="date" id="resDate" required><div class="form-err" id="errDate"></div></div>
+      <div class="form-group"><label class="form-label" for="resTime">Time</label><select class="form-select" id="resTime" required><option value="" disabled selected>Select a time</option></select><div class="form-err" id="errTime"></div></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label" for="resGuests">Party Size</label><select class="form-select" id="resGuests" required><option value="" disabled selected>Number of guests</option><option>1 Guest</option><option>2 Guests</option><option>3 Guests</option><option>4 Guests</option><option>5 Guests</option><option>6 Guests</option><option>7 Guests</option><option>8 Guests</option><option>9 Guests</option><option>10 Guests</option><option>11–15 Guests</option><option>16–20 Guests</option><option>20+ Guests</option></select><div class="form-err" id="errGuests"></div></div>
+      <div class="form-group"><label class="form-label" for="resOccasion">Occasion</label><select class="form-select" id="resOccasion"><option value="" disabled selected>Select occasion</option><option>Regular Dining</option><option>Birthday</option><option>Anniversary</option><option>Date Night</option><option>Business Dinner</option><option>Other</option></select></div>
+    </div>
+    <div class="form-group full"><label class="form-label" for="resNotes">Special Requests</label><textarea class="form-textarea" id="resNotes" placeholder="Birthday, anniversary, dietary requirements…"></textarea></div>
+    <button type="submit" class="res-submit">Confirm Reservation →</button>
+    <div class="res-whatsapp">Or WhatsApp us directly: <a href="https://wa.me/92518445544" target="_blank" rel="noopener">+92 51 8445544</a></div>
+  </form>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-wordmark">Tuscany Courtyard</div>
+      <div class="footer-tagline">Authentic Italian dining since 2012. Stone-oven pizza, handcrafted pasta, and a courtyard that transports you to Tuscany.</div>
+    </div>
+    <div>
+      <div class="footer-heading">Navigate</div>
+      <ul class="footer-links">
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#about">Our Story</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#reserve">Reservations</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">Visit Us</div>
+      <div class="footer-contact">
+        No. 4, Kohsar Market<br>
+        F-6, Islamabad<br><br>
+        <a href="tel:+92518445544">+92 51 8445544</a><br>
+        Opens 12 PM Daily<br><br>
+        <a href="https://www.facebook.com/TuscanyCourtyardIsb" target="_blank" rel="noopener">Facebook</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Tuscany Courtyard</span>
+    <span>Authentic is Everything.</span>
+  </div>
+</footer>
+
+<!-- WHATSAPP -->
+<a href="https://wa.me/92518445544" target="_blank" rel="noopener" class="wa-float" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- TAKEOVER -->
+<div class="takeover" id="takeover" role="dialog" aria-label="Reservation confirmed" aria-modal="true">
+  <div class="takeover-text">You're In.</div>
+  <div class="takeover-sub">We'll confirm your reservation shortly.</div>
+  <button class="takeover-back" id="takeoverBack">← Back to Site</button>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+/* CURSOR */
+const cur = $('#cursor'), ring = $('#cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px'; });
+(function animRing(){rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=Math.round(rx)+'px'; ring.style.top=Math.round(ry)+'px'; requestAnimationFrame(animRing);})();
+
+/* KINETIC TEXT */
+function splitChars(el, text) {
+  el.innerHTML = '';
+  let ci = 0;
+  for (let i = 0; i < text.length; i++) {
+    const s = document.createElement('span');
+    s.classList.add('char');
+    if (text[i] === ' ') { s.classList.add('space'); s.innerHTML = '&nbsp;'; }
+    else { s.textContent = text[i]; s.style.transitionDelay = Math.min(ci * 28, 320) + 'ms'; ci++; }
+    el.appendChild(s);
+  }
+}
+splitChars($('#heroLine1'), 'AUTHENTIC');
+splitChars($('#heroLine2'), 'IS EVERYTHING.');
+
+/* HERO LOAD */
+window.addEventListener('load', () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => $('#hero').classList.add('loaded')));
+});
+
+/* SCROLL PROGRESS */
+function updateProgress() {
+  const s = window.scrollY, h = document.documentElement.scrollHeight - window.innerHeight;
+  $('#scrollProgress').style.width = (h > 0 ? (s/h)*100 : 0) + '%';
+}
+
+/* STICKY NAV */
+let navVis = false;
+function updateNav() {
+  const show = $('#hero').getBoundingClientRect().bottom <= 0;
+  if (show !== navVis) { $('#stickyNav').classList.toggle('visible', show); navVis = show; }
+}
+
+/* HERO + COURTYARD PARALLAX */
+function updateParallax() {
+  const s = window.scrollY;
+  const hh = $('#hero').offsetHeight;
+  if (s < hh) $('#heroBg').style.transform = `translateY(${s * 0.3}px)`;
+  const cd = $('#courtyardBg');
+  const cr = cd.parentElement.getBoundingClientRect();
+  if (cr.bottom > 0 && cr.top < window.innerHeight) {
+    const p = (window.innerHeight/2 - cr.top) * 0.12;
+    cd.style.transform = `translateY(${p}px)`;
+  }
+}
+
+/* KINETIC SECTION */
+const kWords = $$('.kinetic-word');
+let kActive = -1;
+let kSection = null;
+function updateKinetic() {
+  if (!kSection) kSection = $('#kineticSection');
+  const r = kSection.getBoundingClientRect();
+  if (r.top > window.innerHeight || r.bottom < 0) return;
+  const progress = Math.max(0, Math.min(1, -r.top / (r.height - window.innerHeight + 1)));
+  const idx = Math.min(kWords.length - 1, Math.floor(progress * kWords.length));
+  if (idx !== kActive) {
+    if (kActive >= 0) { kWords[kActive].classList.remove('active'); kWords[kActive].classList.add('exit'); setTimeout(()=>kWords[kActive >= 0 ? kActive : 0].classList.remove('exit'), 600); }
+    kWords[idx].classList.add('active');
+    kActive = idx;
+  }
+}
+
+/* MENU CATEGORY NAV */
+const catBlocks = $$('.menu-cat-block');
+const catBtns = $$('.cat-btn');
+function updateCatNav() {
+  const menuEl = $('#menu');
+  if (!menuEl) return;
+  const mr = menuEl.getBoundingClientRect();
+  if (mr.bottom < 64 || mr.top > window.innerHeight) return;
+  let active = catBlocks[0]?.id.replace('cat-','');
+  catBlocks.forEach(b => { if (b.getBoundingClientRect().top <= 160) active = b.id.replace('cat-',''); });
+  catBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.cat === active));
+}
+
+catBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = $('#cat-' + btn.dataset.cat);
+    if (t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 130, behavior: 'smooth' });
+  });
+});
+
+/* SCROLL REVEAL */
+const srObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+}, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+$$('.sr,.sr-left,.sr-right,.sr-scale').forEach(el => srObs.observe(el));
+
+/* GALLERY FILTERS */
+$$('.filter-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    $$('.filter-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    const f = pill.dataset.filter;
+    $$('.g-item').forEach(item => {
+      const match = f === 'all' || item.dataset.cat === f;
+      item.classList.toggle('g-hidden', !match);
+      item.style.opacity = match ? '' : '0';
+      item.style.pointerEvents = match ? '' : 'none';
+    });
+  });
+});
+
+/* RESERVATION FORM — time slots 12PM–11:30PM (Tuscany opens at noon) */
+(function() {
+  const sel = $('#resTime');
+  for (let h = 12; h <= 23; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      if (h === 23 && m > 30) break;
+      const hr = h > 12 ? h - 12 : h, ap = h >= 12 ? 'PM' : 'AM', mn = m === 0 ? '00' : '30';
+      const opt = document.createElement('option');
+      opt.value = h + ':' + mn;
+      opt.textContent = hr + ':' + mn + ' ' + ap;
+      sel.appendChild(opt);
+    }
+  }
+  $('#resDate').setAttribute('min', new Date().toISOString().split('T')[0]);
+})();
+
+$('#resForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  let valid = true;
+  $$('.form-err').forEach(er => { er.textContent = ''; er.classList.remove('show'); });
+  if (!$('#resName').value.trim()) { $('#errName').textContent = 'Name is required'; $('#errName').classList.add('show'); valid = false; }
+  if (!$('#resPhone').value.trim() || $('#resPhone').value.trim().length < 10) { $('#errPhone').textContent = 'Enter a valid phone number'; $('#errPhone').classList.add('show'); valid = false; }
+  if (!$('#resDate').value) { $('#errDate').textContent = 'Pick a date'; $('#errDate').classList.add('show'); valid = false; }
+  if (!$('#resTime').value) { $('#errTime').textContent = 'Select a time'; $('#errTime').classList.add('show'); valid = false; }
+  if (!$('#resGuests').value) { $('#errGuests').textContent = 'Select party size'; $('#errGuests').classList.add('show'); valid = false; }
+  if (valid) { $('#takeover').classList.add('active'); document.body.style.overflow = 'hidden'; }
+});
+
+$('#takeoverBack').addEventListener('click', function() {
+  $('#takeover').classList.remove('active');
+  document.body.style.overflow = '';
+  $('#resForm').reset();
+});
+
+/* SMOOTH SCROLL */
+$$('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const t = $(this.getAttribute('href'));
+    if (t) { e.preventDefault(); window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - (navVis ? 64 : 0), behavior: 'smooth' }); }
+  });
+});
+
+/* MAIN LOOP */
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      updateProgress(); updateNav(); updateParallax(); updateKinetic(); updateCatNav();
+      ticking = false;
+    });
+    ticking = true;
+  }
+}, { passive: true });
+updateProgress(); updateNav();
+</script>
+</body>
+</html>
